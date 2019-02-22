@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8" />
+		<title></title>
+		<script type="text/javascript" src="js/jquery-1.9.1.js"></script>
+		<script type="text/javascript" src="js/echarts.min.js"></script>
+	</head>
+
+	<body>
+		<div id="map" style="margin-top: 100px;margin-left: 500px;width: 1000px;height: 800px;"></div>
+	</body>
+
+</html>
+<script type="text/javascript">
+	$.ajax({ 
+    url : "json/henan.json", 
+    type : "get", 
+    dataType : "json",//jsonp数据类型 
+    jsonp: "callback",//服务端用于接收callback调用的function名的参数 
+    jsonpCallback:"message",
+    success : function(data){ 
+    	echarts.registerMap('henan', data);
+		
+		var geoCoordMap = {
+            "云台山": [113.373143, 35.438161],
+            "龙门石窟": [112.477463, 34.558782],
+            "嵩山": [113.004052, 34.519664],
+            "少林寺": [112.941363, 34.506982],
+            "白马寺": [112.605334, 34.721817],
+            "清明上河园": [114.341092, 34.808158],
+            "殷墟": [114.324739, 36.12166],
+            "画眉谷": [112.309941, 33.797126],
+            "尧山": [112.307785, 33.708246],
+            "叶县县衙": [113.351065, 33.621321],
+            "明道宫": [115.494529, 33.861532],
+            "鸡公山": [114.077358, 31.809313],
+            "嵖岈山": [113.730166, 33.129731],
+            "宝天曼": [111.940051, 33.510786],
+            "双龙湾": [110.838686, 33.991013],
+            "曹丞相府": [113.827489, 34.031552],
+            "芒砀山": [116.501447, 34.189456],
+        };
+        
+        var convertData = function (data) {
+            var res = [];
+            for (var i = 0; i < data.length; i++) {
+                var geoCoord = geoCoordMap[data[i].name];
+                if (geoCoord) {
+                    res.push({
+                        name: data[i].name,
+                        value: geoCoord.concat(data[i].value)
+                    });
+                }
+            }
+            return res;
+        };
+
+        var chartData = [
+            { "name": "云台山", "value": 900 },
+            { "name": "龙门石窟", "value": 100 },
+            { "name": "嵩山", "value": 300 },
+            { "name": "少林寺", "value": 250 },
+            { "name": "白马寺", "value": 100 },
+            { "name": "清明上河园", "value": 600 },
+            { "name": "殷墟", "value": 50 },
+            { "name": "画眉谷", "value": 600 },
+            { "name": "尧山", "value": 600 },
+            { "name": "叶县县衙", "value": 50 },
+            { "name": "明道宫", "value": 50 },
+            { "name": "鸡公山", "value": 50 },
+            { "name": "嵖岈山", "value": 100 },
+            { "name": "宝天曼", "value": 100 },
+            { "name": "双龙湾", "value": 100 },
+            { "name": "曹丞相府", "value": 100 },
+            { "name": "芒砀山", "value": 100 },
+
+        ];
+
+		var chart = echarts.init(document.getElementById('map'));
+		var option = {
+			backgroundColor: '#404a59',
+			title: {
+                text: '旅游地图',
+                x: 'center',
+                textStyle: {
+                    color: '#fff'
+                }
+            },
+			tooltip: {
+				trigger: 'item',
+			},
+			legend: {
+                orient: 'vertical',
+                y: 'bottom',
+                x: 'right',
+                data: ['地址'],
+                textStyle: {
+                    color: '#fff'
+                }
+            },
+			visualMap: {
+                min: 0,
+                max: 1000,
+                calculable: true,
+                inRange: {
+                    color: ['#50a3ba', '#eac736', '#d94e5d']
+                },
+                textStyle: {
+                    color: '#fff'
+                }
+            },
+			geo: {
+                map: '河南',
+                label: {
+                    emphasis: {
+                        show: false
+                    }
+                },
+                roam: true,
+                itemStyle: {
+                    normal: {
+                        areaColor: '#323c48',
+                        borderColor: '#111'
+                    },
+                    emphasis: {
+                        areaColor: '#2a333d'
+                    }
+
+                }
+            },
+			series: [{
+                name: '地址',
+                type: 'scatter',
+                coordinateSystem: 'geo',
+                data: convertData(chartData),
+                symbolSize: 12,
+                label: {
+                    normal: {
+                        show: false
+                    },
+                    emphasis: {
+                        show: false
+                    }
+                },
+                itemStyle: {
+                    emphasis: {
+                        borderColor: '#fff',
+                        borderWidth: 1
+                    }
+                }
+			},{
+				type: 'map',
+				map: 'henan',
+				itemStyle: {
+					normal: {
+						borderWidth: 1, //区域边框宽度
+						borderColor: '#12446d', //区域边框颜色
+						label: {
+							show: true,
+							color: '#fff'
+						},
+						areaColor: ['#2c74d3']
+					},
+					emphasis: {
+						label: {
+							show: true,
+							color: '#fff'
+						},
+						areaColor: '#32fdff'
+					}
+				},
+				data: [
+				]
+			}
+			]
+		};
+		chart.setOption(option);
+   },
+     error: function(){
+     alert('fail....');
+    }
+  });
+</script>
